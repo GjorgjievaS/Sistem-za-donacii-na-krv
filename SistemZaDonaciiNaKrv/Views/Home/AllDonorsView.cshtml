@@ -1,0 +1,57 @@
+﻿@model List<SistemZaDonaciiNaKrv.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Листа на сите донори";
+}
+
+<h3>Листа на сите донори:</h3>
+<br />
+
+
+<table class="table" style="max-width:500px">
+
+    <tr class="table-info">
+
+        <th>
+            Име:
+        </th>
+        <th>
+            Презиме:
+        </th>
+        <th>
+            Е-адреса
+        </th>
+
+    </tr>
+  @{ 
+      int i = 0;
+      foreach (var m in Model)
+      {
+<tr class="@(i%2==0?"table-default":"table-active")">
+    @if (User.IsInRole("Admin"))
+      {
+        <td>@m.FirstName </td>
+        <td>@m.LastName </td>
+        <td>@m.Email </td>
+        <td><a href="/Home/MakeUserDoctor?email=@m.Email">Make Doctor</a></td>
+
+    }
+          @if (User.IsInRole("Doctor"))
+      {
+        <td>@m.FirstName </td>
+        <td>@m.LastName </td>
+        <td>@m.Email </td>
+    }
+
+</tr>
+       i++;
+      }
+   
+      }
+
+</table>
+
+
+
+
+    

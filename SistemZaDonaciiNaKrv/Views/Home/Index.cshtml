@@ -1,0 +1,347 @@
+﻿@model List<SistemZaDonaciiNaKrv.Models.DonationModel>
+
+@{
+    ViewBag.Title = "Насловна страна";
+}
+
+
+@if (Request.IsAuthenticated)
+{
+
+    <script src="~/Scripts/Custom/Chart.min.js"></script>
+    if (User.IsInRole("Doctor"))
+    {
+        @*<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>*@
+        <script src="~/Scripts/Custom/Chart.min.js"></script>
+
+
+        <canvas class="float-right" id="myChart" width="700" height="400" style="max-width:700px"></canvas>
+        <script>
+            var data2;
+            jQuery.get("/api/BloodTypeApi", function (data) {
+
+                console.log(data);
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                        datasets: [{
+                            label: 'Број на единици крв',
+                            data: [data[0].APositive, data[0].ANegative, data[0].BPositive, data[0].BNegative, data[0].ABPositive, data[0].ABNegative, data[0].OPositive, data[0].ONegative],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(255, 99, 132, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+
+
+
+
+
+        </script>
+
+
+        <h1>
+            <span class="testIme"></span>
+            @if (User.IsInRole("Admin"))
+            {
+                <span> (Admin)</span>
+            }
+
+        </h1>
+        <br />
+        <br />
+        <a href="/DonatorForm/Index" style="width:300px" class="btn btn-outline-primary">Прегледај формулари</a>
+        <br />
+        <br />
+
+        <a href="/Home/AllDonorsView" style="width:300px" class="btn btn-outline-primary">Прегледај ги сите донори</a>
+        <br />
+        <br />
+        <a href="/Home/AllDonationsView" style="width:300px" class="btn btn-outline-primary">Закажани термини</a>
+
+
+
+        <script>
+        jQuery.get("/Account/getUserName/?email=@User.Identity.Name", function(data) {
+          $(".testIme").html(data);
+        });
+        </script>
+    }
+
+    if (User.IsInRole("Donor"))
+    {
+        <h1>
+            Добредојдовте
+            <span class="testIme"></span>
+
+        </h1>
+
+        <div class="text-center">
+            <br />
+            <div class="text-center float-right mr-5 mt-4" style="font-size:20px">
+
+                <br />
+                @if (DateTime.Now.CompareTo(ViewBag.lastDonationDatePlusSixMonths) > 0)
+                {
+                    <span>Пополнете формулар за да</span>
+                    <div>добиете термин за донација</div>
+                    <a href="/DonatorForm/Create" class="btn btn-outline-primary">
+                        Пополни формулар
+                    </a>
+                }
+                else
+                {
+                    <span>Ви преостануваат уште</span>
+                    <div> <span id="countdownTimer" class="font-weight-bold"></span> <span class="font-weight-bold"> денови </span> до вашата следна донација. </div>
+                    <a href="/DonatorForm/Create" class="btn btn-outline-primary disabled">
+                        Пополни формулар
+                    </a>
+                }
+
+            </div>
+
+            <div style="max-width:500px">
+                @Html.Partial("_UserDonations", Model)
+
+            </div>
+
+
+            <br />
+            <div class="float-left" style="font-size:19px">
+                <span class="font-weight-bold">Вашата последна донација:</span>
+                <span>@(ViewBag.lastDonationDate == new DateTime() ? "Немате донирано крв" : ViewBag.lastDonationDate)</span>
+            </div>
+            <br />
+            <br />
+            <br />
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Add Doctor", "AllDonorsView", "Home");
+            }
+
+            @*@Ajax.ActionLink("View all donations", "PartialUserDonations", new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "blabla", InsertionMode = InsertionMode.Replace })
+                <div id="blabla"></div>*@
+
+            @*<div class="midBox card attentionSeeker float-sm-right">
+                    <div class="card-body">
+
+                        <a class="btn btn-info" href="/Account/Register/">Донирајте крвна плазма</a>
+                    </div>
+                </div>*@
+
+        </div>
+        <script>
+          // Set the date we're counting down to
+          var countDownDate = new Date("@ViewBag.lastDonationDatePlusSixMonths").getTime();
+
+          // Update the count down every 1 second
+          var x = setInterval(function() {
+
+          // Get today's date and time
+          var now = new Date().getTime();
+
+          // Find the distance between now and the count down date
+          var distance = countDownDate - now;
+
+          // Time calculations for days, hours, minutes and seconds
+          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          // Display the result in the element with id="demo"
+              document.getElementById("countdownTimer").innerHTML = days;
+
+          // If the count down is finished, write some text
+          if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("countdownTimer").innerHTML = "EXPIRED";
+          }
+        }, 1000);
+        </script>
+
+        <script>
+        jQuery.get("/Account/getUserName/?email=@User.Identity.Name", function(data) {
+          $(".testIme").html(data);
+        });
+        </script>
+    }
+
+    if (User.IsInRole("Admin"))
+    {
+        <h1>
+            Добредојдовте
+            <span class="testIme"></span>
+
+        </h1>
+
+        <br />
+
+        <a href="/Home/AllDonorsView" class="btn btn-outline-primary">Прегледај донори</a>
+
+
+    }
+
+
+
+}
+else
+{
+    <div class="text-center">
+        <h3 style="color: #d90404;">Дарувај крв, спаси човечки живот.</h3>
+    </div>
+
+    <div id="paragraphs">
+        <p>Да се стане крводарител пред се значи да се биде хуман човек.</p>
+        <p>Преку овој хуман гест, со само една донирана кеса крв, може да спасите и до 3 или 4 животи.</p>
+        <p>Доколку не сте целосно запознаени со овој процес <a href="/Home/Info/">тука</a> може да прочитате повеќе информации поврзани со донирање на крв.</p>
+    </div>
+
+    <div class="text-center">
+        <div class="midBox card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    САКАТЕ ДА СТАНЕТЕ ДОНОР?
+                </h3>
+                <p class="card-text">Ако сакате и вие да станете дел од хуманите луѓе кои спасиле многу човечки животи.</p>
+                <a style="width:183px" class="btn btn-info" href="/Account/Register/">Регистрирајте се</a>
+            </div>
+        </div>
+        <div class="midBox card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    ВЕЌЕ СТЕ ДОНОР?
+                </h3>
+                <p class="card-text">Доколку сакате да се информирате кога повторно може да донирате крв или сакате да промените некои ваши податоци.</p>
+                <a style="width:183px" class="btn btn-info" href="/Account/Login/">Најавете се</a>
+            </div>
+        </div>
+        @*<div class="midBox card attentionSeeker">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        ДОНИРАЈТЕ КРВНА ПЛАЗМА!
+                    </h3>
+                    <p class="card-text">Ако вие сте ја победиле битката против <strong>корона вирусот</strong>, а притоа сакате да помогнете и на други луѓе да успеат во тоа.</p>
+                    <a class="btn btn-info" href="/Account/Register/">Донирајте крвна плазма</a>
+                </div>
+            </div>*@
+    </div>
+}
+
+<style>
+
+    #paragraphs {
+        -webkit-animation: fade-in-down 1s;
+        animation: fade-in-down 1s;
+        text-align: center;
+        margin-top: 36px;
+        margin-bottom: 36px;
+    }
+
+        #paragraphs p {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+    .midBox.card {
+        margin-left: 15%;
+        -webkit-animation: fade-in-up 1s;
+        animation: fade-in-up 1s;
+    }
+
+    @@-webkit-keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @@keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @@-webkit-keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @@keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+</style>
+
+@section scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            //if the user has a mobile screen
+            if (document.documentElement.scrollWidth < 500) {
+                const c = document.querySelectorAll(".midBox.card");
+                c.forEach((it) => {
+                    $(it).css({ "width": "270px", "height": "270px" });
+                });
+            }
+
+        });
+    </script>
+}

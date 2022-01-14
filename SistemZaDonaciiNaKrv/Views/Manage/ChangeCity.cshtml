@@ -1,0 +1,19 @@
+﻿@model SistemZaDonaciiNaKrv.Models.ChangeCityViewModel
+@{
+    ViewBag.Title = "Промена на град";
+}
+
+    <h2>Промена на град</h2>
+
+@using (Html.BeginForm("ChangeCity", "Manage"))
+{
+    <div class="form-group">
+        <label>Град</label>
+        @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
+    </div>
+ 
+    <button type="submit" class="btn btn-primary">Промени</button>
+}
+
+
+

@@ -1,0 +1,93 @@
+﻿@model SistemZaDonaciiNaKrv.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Направете корисничка сметка и станете крводарител.</h4>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Е-адреса</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Име</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Презиме</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Град</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Адреса</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Телефон</label>
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Пол</label>
+        <div class="col-md-5">
+            @Html.DropDownListFor(m => m.Gender, new SelectList(new List<string>() { "Машки", "Женски" }), new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Крвна група</label>
+        <div class="col-md-5">
+            @Html.DropDownListFor(m => m.BloodType, new SelectList(new List<string>() { "A+", "A-","B+","B-","AB+", "AB-","O+","O-" }), new { @class = "form-control" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Лозинка</label>
+        <div class="col-md-5">
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Потврди лозинка</label>
+        <div class="col-md-5">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Регистрирајте се" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
